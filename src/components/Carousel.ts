@@ -27,6 +27,7 @@ import {
   getMinSlideIndex,
   getSlidesToScroll,
   mapNumberToRange,
+  useElementRect,
 } from '@/utils'
 
 import ARIAComponent from './ARIA'
@@ -56,6 +57,7 @@ export default defineComponent({
 
     let autoplayTimer: ReturnType<typeof setInterval> | null
     let transitionTimer: ReturnType<typeof setTimeout> | null
+    const { width } = useElementRect(root)
 
     provide('config', config)
     provide('slidesCount', slidesCount)
@@ -149,7 +151,9 @@ export default defineComponent({
       window.addEventListener('resize', handleWindowResize, { passive: true })
       emit('init')
     })
-
+    watch(() => width.value, () => {
+      handleWindowResize();
+    })
     onUnmounted(() => {
       if (transitionTimer) {
         clearTimeout(transitionTimer)
